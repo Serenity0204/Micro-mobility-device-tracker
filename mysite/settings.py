@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "micro_mobility_device_tracker",
 ]
 
 MIDDLEWARE = [

@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path('', include('yourapp.urls')),
+    path('', include('micro_mobility_device_tracker.urls')),
 ]
