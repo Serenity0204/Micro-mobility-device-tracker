@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Upload Your Face Image</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      {% if profile.owner_image %}
+        <img src="{{ profile.owner_image.url }}" alt="Your face" width="200" class="mb-3"><br>
+      {% endif %}
+      <input type="file" name="owner_image" class="form-control-file" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
+{% endblock %}
