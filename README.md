@@ -10,5 +10,16 @@ Project Intro
 ## General Design Flow:
 https://docs.google.com/document/d/151UgRyzX1GIQnWgQZXjd5QYPJwO0W-ZCCpm5zK5xot8/edit?usp=sharing
 
-## System Setup
-To run this project run the command 'pip install -r requirements.txt'
+## Quick Start
+
+To set up and run the project with one command, run:
+
+## Quick Start
+
+```
+bash
+git clone https://github.com/your-org/your-repo.git
+cd your-repo
+chmod +x setup.sh
+./setup.sh
+```
