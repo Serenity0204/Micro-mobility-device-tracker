@@ -23,3 +23,7 @@ cd your-repo
 chmod +x setup.sh
 ./setup.sh
 ```
+
+## Contributions
+
+- **PCB Design**: XXX
