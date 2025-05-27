@@ -22,14 +22,14 @@ def esp32_control_page(request):
 
 def esp32_send_high(request):
     try:
-        requests.get(f"{ESP32_IP}/H", timeout=3)
+        requests.get(f"{ESP32_IP}/high", timeout=3)
         return redirect('esp32_control')
     except requests.exceptions.RequestException as e:
         return HttpResponse(f"Error sending HIGH: {e}")
 
 def esp32_send_low(request):
     try:
-        requests.get(f"{ESP32_IP}/L", timeout=3)
+        requests.get(f"{ESP32_IP}/low", timeout=3)
         return redirect('esp32_control')
     except requests.exceptions.RequestException as e:
         return HttpResponse(f"Error sending LOW: {e}")
