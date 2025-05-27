@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ESP32 Control</title>
+</head>
+
+<body>
+    <h1>ESP32 Control Panel</h1>
+    <form action="{% url 'esp32_high' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">HIGH</button>
+    </form>
+    <br>
+    <form action="{% url 'esp32_low' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">LOW</button>
+    </form>
+</body>
+
+</html>

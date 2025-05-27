@@ -10,6 +10,29 @@ from django.http import JsonResponse
 from .models import Profile
 from .utils import recognize_faces_util
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+import requests
+
+ESP32_IP = "http://172.20.10.10"
+
+
+def esp32_control_page(request):
+    return render(request, 'control.html')
+
+def esp32_send_high(request):
+    try:
+        requests.get(f"{ESP32_IP}/H", timeout=3)
+        return redirect('esp32_control')
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Error sending HIGH: {e}")
+
+def esp32_send_low(request):
+    try:
+        requests.get(f"{ESP32_IP}/L", timeout=3)
+        return redirect('esp32_control')
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Error sending LOW: {e}")
 
 
 # Create your views here.
