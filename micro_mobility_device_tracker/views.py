@@ -24,8 +24,38 @@ import io
 import uuid
 import logging
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 
 ESP32_IP = "http://172.20.10.10"
+ESP32_CAM_IP = "http://172.20.10.8"
+
+
+def view_image(request):
+    return render(request, "view_image.html")
+
+
+def capture_handler(request):
+    print("Capture endpoint hit!")
+    return HttpResponse("Received", status=200)
+
+def capture_snapshot(request):
+    try:
+        response = requests.get(f"{ESP32_CAM_IP}/capture", timeout=5)
+        if response.status_code == 200:
+            filename = "captured.jpg"
+
+            path = os.path.join("media", filename)
+            with open(path, "wb") as f:
+                f.write(response.content)
+
+            return render(request, "captured_image.html", {"filename": filename})
+        
+        return HttpResponse("Failed to capture image", status=500)
+    except Exception as e:
+        return HttpResponse(f"Error: {e}", status=500)
+
+
 
 
 def esp32_control_page(request):

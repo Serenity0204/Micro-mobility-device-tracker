@@ -19,4 +19,9 @@ urlpatterns = [
     path('esp32/low/', views.esp32_send_low, name='esp32_low'),
     # ESP32-cam
     path('upload/', esp32_upload, name='esp32cam_upload'),
+
+
+    path("view-image/", views.view_image, name="view_image"),
+    path("capture-snapshot/", views.capture_snapshot, name="capture_snapshot"),
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

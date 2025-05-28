@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    img {
+        border: 4px solid #333;
+        border-radius: 8px;
+        max-width: 90%;
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 12px 24px;
+        font-size: 18px;
+        border: none;
+        border-radius: 6px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<h1>📷 ESP32-CAM Live Stream</h1>
+<img id="stream" src="http://172.20.10.8/" alt="Live Stream"><br>
+<form action="/capture-snapshot/" method="get" onsubmit="document.getElementById('stream').src = '';">
+    <button type="submit">📸 Take Snapshot</button>
+</form>
+{% endblock %}

@@ -1,110 +1,102 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
-  <head>
-    <title>Micro Mobility Device Tracker</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/codemirror.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/mode/clike/clike.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/addon/edit/closebrackets.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-    <style>
-      
-      html,
-      body {
-        background-color: #c3eb95;
-        background-image: 
-            radial-gradient(at 47% 33%, hsl(162.00, 77%, 40%) 0, transparent 59%), 
-            radial-gradient(at 82% 65%, hsl(198.00, 100%, 50%) 0, transparent 55%);
-        height: 100%;
-      }
 
-      .container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
+<head>
+  <title>Micro Mobility Device Tracker</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/codemirror.min.css">
 
-      .content {
-        flex: 1;
-      }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/mode/clike/clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/addon/edit/closebrackets.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-      .footer {
-        flex-shrink: 0;
-        width: 100%;
-      }
-    </style>
-  </head>
+  <style>
+    html,
+    body {
+      background-color: #c3eb95;
+      background-image:
+        radial-gradient(at 47% 33%, hsl(162.00, 77%, 40%) 0, transparent 59%),
+        radial-gradient(at 82% 65%, hsl(198.00, 100%, 50%) 0, transparent 55%);
+      height: 100%;
+    }
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="{% url 'home' %}">Micro Mobility Device Tracker</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          <!-- Added ml-auto class -->
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'home' %}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'upload_owner_image' %}">My Face Image</a>
-          </li>
-          {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'scooter_watch' %}">Scooter Watch</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-          </li>           
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
-          </li>
-              
-          {% endif %}
-        </ul>
-      </div>
-    </nav>
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-    <div class="container">
-      <div class="content">{% block content %} {% endblock %}</div>
+    .content {
+      flex: 1;
+    }
+
+    .footer {
+      flex-shrink: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'home' %}">Micro Mobility Device Tracker</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <!-- Added ml-auto class -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'upload_owner_image' %}">My Face Image</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'scooter_watch' %}">Scooter Watch</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'view_image' %}">View Image</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">Register</a>
+        </li>
+
+        {% endif %}
+      </ul>
     </div>
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white mt-4">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-12 text-center">
-            <p>&copy; ECE 196 Team 1: Yu-Heng Lin, Sihan Wang, Linfeng Zhang</p>
-          </div>
+  </nav>
+
+  <div class="container">
+    <div class="content">{% block content %} {% endblock %}</div>
+  </div>
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white mt-4">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <p>&copy; ECE 196 Team 1: Yu-Heng Lin, Sihan Wang, Linfeng Zhang</p>
         </div>
       </div>
-    </footer>
-  </body>
+    </div>
+  </footer>
+</body>
+
 </html>
