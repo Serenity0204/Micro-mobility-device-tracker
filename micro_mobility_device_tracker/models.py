@@ -5,7 +5,7 @@ import os
 
 def user_image_path(instance, filename):
     ext = filename.split('.')[-1]
-    filename = f"{instance.user.username}_{uuid.uuid4().hex}.{ext}"
+    filename = f"{instance.user.username}.{ext}"  # e.g., siw031.jpg
     return os.path.join('owner_photos/', filename)
 
 class Profile(models.Model):

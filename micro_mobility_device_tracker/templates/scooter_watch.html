@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<meta http-equiv="refresh" content="4">
+
+<h2 class="text-center">📷 Scooter Watch</h2>
+<meta http-equiv="refresh" content="5">
+<h4>⚠️ Intrusion Captures (with Faces)</h4>
+<div style="display: flex; flex-wrap: wrap;">
+  {% for img in face_images %}
+    <div style="margin: 10px;">
+      <img src="{{ img.url }}" style="max-width: 250px;">
+      <p>{{ img.result }}</p>
+      <form action="{% url 'delete_face_image' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="filename" value="{{ img.name }}">
+        <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+      </form>
+    </div>
+  {% empty %}
+    <p>No face-detected images yet.</p>
+  {% endfor %}
+</div>
+
+<hr>
+
+<h4>👀 Latest Activity (No Face)</h4>
+<div class="text-center">
+  <img src="{{ latest_img }}?t={{ timestamp }}" style="max-width: 400px;">
+</div>
+{% endblock %}
