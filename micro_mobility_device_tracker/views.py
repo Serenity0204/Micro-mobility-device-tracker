@@ -49,7 +49,7 @@ def capture_snapshot(request):
             with open(path, "wb") as f:
                 f.write(response.content)
 
-            return render(request, "captured_image.html", {"filename": filename})
+            return redirect('view_image')
         
         return HttpResponse("Failed to capture image", status=500)
     except Exception as e:
