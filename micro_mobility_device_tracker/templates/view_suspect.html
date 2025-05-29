@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <style>
     body {
@@ -13,15 +12,66 @@
         max-width: 90%;
         margin-top: 20px;
     }
+
+    button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
 </style>
 
 <h1>🚨 Suspect Monitor</h1>
+
+<h3>Status: 
+    {% if is_locked %}
+        🔒 Monitoring Active
+    {% else %}
+        🔓 Monitoring Off
+    {% endif %}
+</h3>
+
+<form method="POST" action="{% url 'toggle_lock' %}">
+    {% csrf_token %}
+    <button type="submit">
+        {% if is_locked %}
+            🔓 Unlock (Stop Monitoring)
+        {% else %}
+            🔒 Lock (Start Monitoring)
+        {% endif %}
+    </button>
+</form>
+
+<h4>⚠️ Intrusion Captures (with Faces)</h4>
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
+  {% for img in face_images %}
+    <div style="margin: 10px;">
+      <img src="{{ img.url }}" style="max-width: 250px;">
+      <p>{{ img.result }}</p>
+      <button class="btn btn-danger btn-sm" onclick="deleteImage('{{ img.name }}', this)">Delete</button>
+    </div>
+  {% empty %}
+    <p>No face-detected images yet.</p>
+  {% endfor %}
+</div>
+
 <h3>Updates every 10 seconds</h3>
+<h4>👀 Latest Activity (No Face)</h4>
+
 {% if image_url %}
-<img id="suspect" src="{{ image_url }}" alt="Suspect Image">
+    <img id="suspect" src="{{ image_url }}" alt="Suspect Image">
 {% else %}
-<p>No suspect image available.</p>
+    <p>No suspect image available.</p>
 {% endif %}
+
 
 
 <script>
@@ -42,5 +92,29 @@
 
     setInterval(refreshImage, 10000);
     refreshImage(); // Initial load
+
+    function deleteImage(filename, button) {
+    fetch("{% url 'delete_face_image' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: "filename=" + encodeURIComponent(filename),
+    })
+    .then(response => {
+        if (response.ok) {
+            // Remove the image block from the page
+            const container = button.closest("div");
+            container.remove();
+        } else {
+            alert("Failed to delete image");
+        }
+    })
+    .catch(err => {
+        console.error("Error:", err);
+        alert("An error occurred");
+    });
+}
 </script>
 {% endblock %}

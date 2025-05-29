@@ -61,9 +61,6 @@
           <a class="nav-link" href="{% url 'upload_owner_image' %}">My Face Image</a>
         </li>
         {% if user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'scooter_watch' %}">Scooter Watch</a>
-        </li>
 
         <li class="nav-item">
           <a class="nav-link" href="{% url 'owner_unlock' %}">Owner Unlock</a>
@@ -88,6 +85,15 @@
       </ul>
     </div>
   </nav>
+
+  <p>
+    Monitoring Status: 
+    {% if monitoring_active %}
+        <span style="color: red;">🔒 Locked</span>
+    {% else %}
+        <span style="color: green;">🔓 Unlocked</span>
+    {% endif %}
+  </p>
 
   <div class="container">
     <div class="content">{% block content %} {% endblock %}</div>
