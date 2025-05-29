@@ -31,13 +31,8 @@ ESP32_IP = "http://172.20.10.10"
 ESP32_CAM_IP = "http://172.20.10.8"
 
 
-def view_image(request):
-    return render(request, "view_image.html")
-
-
-def capture_handler(request):
-    print("Capture endpoint hit!")
-    return HttpResponse("Received", status=200)
+def owner_unlock_view(request):
+    return render(request, "owner_unlock.html")
 
 def capture_snapshot(request):
     try:
@@ -49,11 +44,34 @@ def capture_snapshot(request):
             with open(path, "wb") as f:
                 f.write(response.content)
 
-            return redirect('view_image')
+            return redirect('owner_unlock')
         
         return HttpResponse("Failed to capture image", status=500)
     except Exception as e:
         return HttpResponse(f"Error: {e}", status=500)
+
+
+def view_suspect(request):
+    image_path = os.path.join("media", "suspect.jpg")
+    if os.path.exists(image_path):
+        image_url = "/media/suspect.jpg" 
+    else:
+        image_url = None
+    context = {"image_url": image_url}
+    return render(request, "view_suspect.html", context)
+
+
+def update_suspect_snapshot(request):
+    try:
+        response = requests.get(f"{ESP32_CAM_IP}/capture", timeout=5)
+        if response.status_code == 200:
+            path = os.path.join("media", "suspect.jpg")
+            with open(path, "wb") as f:
+                f.write(response.content)
+            return JsonResponse({"status": "success"})
+        return JsonResponse({"status": "failed"}, status=500)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 

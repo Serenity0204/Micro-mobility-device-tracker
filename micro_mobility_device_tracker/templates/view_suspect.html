@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    img {
+        border: 4px solid #333;
+        border-radius: 8px;
+        max-width: 90%;
+        margin-top: 20px;
+    }
+</style>
+
+<h1>🚨 Suspect Monitor</h1>
+<h3>Updates every 10 seconds</h3>
+{% if image_url %}
+<img id="suspect" src="{{ image_url }}" alt="Suspect Image">
+{% else %}
+<p>No suspect image available.</p>
+{% endif %}
+
+
+<script>
+    function refreshImage() {
+        fetch("/update-suspect/")
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to update image");
+                return response.json();
+            })
+            .then(() => {
+                const img = document.getElementById("suspect");
+                img.src = "/media/suspect.jpg?t=" + new Date().getTime(); // force refresh
+            })
+            .catch(error => {
+                console.error("Update failed:", error);
+            });
+    }
+
+    setInterval(refreshImage, 10000);
+    refreshImage(); // Initial load
+</script>
+{% endblock %}

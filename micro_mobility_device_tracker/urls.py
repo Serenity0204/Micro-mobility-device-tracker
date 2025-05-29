@@ -21,7 +21,8 @@ urlpatterns = [
     path('upload/', esp32_upload, name='esp32cam_upload'),
 
 
-    path("view-image/", views.view_image, name="view_image"),
+    path("owner-unlock/", views.owner_unlock_view, name="owner_unlock"),
     path("capture-snapshot/", views.capture_snapshot, name="capture_snapshot"),
-    
+    path("view-suspect/", views.view_suspect, name="view_suspect"),
+    path("update-suspect/", views.update_suspect_snapshot, name="update_suspect"),    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

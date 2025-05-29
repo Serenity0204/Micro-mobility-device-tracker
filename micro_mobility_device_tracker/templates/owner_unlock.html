@@ -5,7 +5,6 @@
     body {
         font-family: Arial, sans-serif;
         text-align: center;
-        margin-top: 40px;
     }
 
     img {
@@ -36,27 +35,5 @@
     <button type="submit">📸 Take Snapshot</button>
 </form>
 
-<script>
-    const stream = document.getElementById('stream');
-    const streamURL = "http://172.20.10.8/";
-
-    setInterval(function () {
-        // Stop stream
-        stream.src = '';
-
-        // Trigger capture
-        fetch('/capture-snapshot/')
-            .then(response => {
-                if (!response.ok) throw new Error("Request failed");
-                console.log("Snapshot captured");
-
-                // Restart stream after delay
-                setTimeout(() => {
-                    stream.src = streamURL;
-                }, 1); // restart after 1 second
-            })
-            .catch(error => console.error("Error capturing snapshot:", error));
-    }, 10000);
-</script>
 
 {% endblock %}
