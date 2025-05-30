@@ -29,14 +29,20 @@
     }
 </style>
 {% if match_result %}
-    <p style="font-size: 20px; color: {% if '✅' in match_result %}green{% else %}red{% endif %};">
-        {{ match_result }}
-    </p>
-    <img src="{{ captured_img_url }}" alt="Captured Image">
+{% if set_green %}
+<p style="font-size: 20px; color: green;">
+    {{ match_result }}
+</p>
+{% else %}
+<p style="font-size: 20px; color: red;">
+    {{ match_result }}
+</p>
+<img src="{{ captured_img_url }}" alt="Captured Image">
+{% endif %}
 {% endif %}
 
 <h1>📷 ESP32-CAM Live Stream</h1>
-<img id="stream" src="http://192.168.1.225/" alt="Live Stream"><br>
+<img id="stream" src="http://172.20.10.8/" alt="Live Stream"><br>
 <form action="/capture-snapshot/" method="get" onsubmit="document.getElementById('stream').src = '';">
     <button type="submit">📸 Take Snapshot</button>
 </form>

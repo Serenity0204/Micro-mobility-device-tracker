@@ -7,8 +7,6 @@ from .models import Profile
 from django.db import IntegrityError
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Profile
-from .utils import recognize_faces_util
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 import requests
@@ -30,7 +28,7 @@ from django.views.decorators.http import require_GET
 
 
 ESP32_IP = "http://172.20.10.10"
-ESP32_CAM_IP = "http://192.168.1.225"
+ESP32_CAM_IP = "http://172.20.10.8"
 
 LOCK_FILE = os.path.join(settings.BASE_DIR, "lock_state.txt")
 
@@ -45,15 +43,53 @@ def set_lock_state(state):
         if os.path.exists(LOCK_FILE):
             os.remove(LOCK_FILE)
 
+def recognize_faces_util(owner_path, test_path):
+    owner_img = face_recognition.load_image_file(owner_path)
+    test_img = face_recognition.load_image_file(test_path)
+
+    owner_encodings = face_recognition.face_encodings(owner_img)
+    test_encodings = face_recognition.face_encodings(test_img)
+
+    if not owner_encodings:
+        return ["❗ No face found in owner's image."]
+    if not test_encodings:
+        return ["❗ No face found in uploaded image."]
+
+    match = face_recognition.compare_faces([owner_encodings[0]], test_encodings[0])[0]
+    return ["✅ Match (Same person)" if match else "❌ No match (Different person)"]
+
+
+
+def esp32_control_page(request):
+    return render(request, 'control.html')
+
+def esp32_send_high(request):
+    try:
+        requests.get(f"{ESP32_IP}/high", timeout=3)
+        return redirect('esp32_control')
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Error sending HIGH: {e}")
+
+def esp32_send_low(request):
+    try:
+        requests.get(f"{ESP32_IP}/low", timeout=3)
+        return redirect('esp32_control')
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Error sending LOW: {e}")
+
+
+
 @require_POST
 @login_required
 def toggle_lock(request):
     set_lock_state(not is_locked())
     return redirect("view_suspect")
 
+@login_required
 def owner_unlock_view(request):
     return render(request, "owner_unlock.html")
 
+@login_required
 def capture_snapshot(request):
     try:
         response = requests.get(f"{ESP32_CAM_IP}/capture", timeout=5)
@@ -63,19 +99,22 @@ def capture_snapshot(request):
             with open(path, "wb") as f:
                 f.write(response.content)
 
-            user = User.objects.first()
-            profile = user.profile
+            profile = request.user.profile
             owner_path = profile.owner_image.path
 
             result = recognize_faces_util(owner_path, path)[0]
 
             # Auto-unlock if match
+            set_green = False
+
             if "✅" in result:
                 set_lock_state(False)
-
+                set_green = True
+            
             return render(request, "owner_unlock.html", {
                 "match_result": result,
                 "captured_img_url": "/media/captured.jpg",
+                "set_green" : set_green,
             })
 
         return HttpResponse("Failed to capture image", status=500)
@@ -83,6 +122,7 @@ def capture_snapshot(request):
         return HttpResponse(f"Error: {e}", status=500)
 
 
+@login_required
 def view_suspect(request):
     # Suspect image (latest activity)
     image_path = os.path.join("media", "suspect.jpg")
@@ -113,7 +153,7 @@ def view_suspect(request):
 })
 
 
-
+@login_required
 @require_GET
 def update_suspect_snapshot(request):
     if not is_locked():
@@ -131,8 +171,7 @@ def update_suspect_snapshot(request):
 
         if face_locations:
             # Save with result if face found
-            user = User.objects.first()
-            profile = user.profile
+            profile = request.user.profile
             owner_path = profile.owner_image.path
 
             # Save temp
@@ -165,22 +204,6 @@ def update_suspect_snapshot(request):
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
-def esp32_control_page(request):
-    return render(request, 'control.html')
-
-def esp32_send_high(request):
-    try:
-        requests.get(f"{ESP32_IP}/high", timeout=3)
-        return redirect('esp32_control')
-    except requests.exceptions.RequestException as e:
-        return HttpResponse(f"Error sending HIGH: {e}")
-
-def esp32_send_low(request):
-    try:
-        requests.get(f"{ESP32_IP}/low", timeout=3)
-        return redirect('esp32_control')
-    except requests.exceptions.RequestException as e:
-        return HttpResponse(f"Error sending LOW: {e}")
 
 
 # Create your views here.
@@ -257,72 +280,7 @@ def logout_view(request):
     return redirect("login")
 
 
-def recognize_faces_util(owner_path, test_path):
-    owner_img = face_recognition.load_image_file(owner_path)
-    test_img = face_recognition.load_image_file(test_path)
 
-    owner_encodings = face_recognition.face_encodings(owner_img)
-    test_encodings = face_recognition.face_encodings(test_img)
-
-    if not owner_encodings:
-        return ["❗ No face found in owner's image."]
-    if not test_encodings:
-        return ["❗ No face found in uploaded image."]
-
-    match = face_recognition.compare_faces([owner_encodings[0]], test_encodings[0])[0]
-    return ["✅ Match (Same person)" if match else "❌ No match (Different person)"]
-
-@csrf_exempt
-@require_POST
-def esp32_upload(request):
-    if 'image' not in request.FILES:
-        return JsonResponse({"error": "No image provided"}, status=400)
-
-    image = request.FILES["image"]
-    image_bytes = image.read()
-
-    try:
-        # Convert to image array
-        img = Image.open(io.BytesIO(image_bytes))
-        img_np = np.array(img)
-        face_locations = face_recognition.face_locations(img_np)
-
-        if face_locations:
-            # 🔍 Match against logged-in user's profile (for testing, you may default to one user)
-            user = request.user if request.user.is_authenticated else User.objects.first()
-            profile = user.profile
-            owner_path = profile.owner_image.path
-
-            # Save test image
-            test_path = os.path.join(settings.MEDIA_ROOT, "temp_test.jpg")
-            with open(test_path, "wb") as f:
-                f.write(image_bytes)
-
-            # Compare
-            results = recognize_faces_util(owner_path, test_path)
-            result_text = results[0]
-
-            # Save to faces/
-            filename = f"{uuid.uuid4().hex}.jpg"
-            filepath = os.path.join(settings.MEDIA_ROOT, "faces", filename)
-            with open(filepath, "wb") as f:
-                f.write(image_bytes)
-            with open(filepath + ".txt", "w") as f:
-                f.write(result_text)
-
-            os.remove(test_path)
-
-        else:
-            # No face → overwrite latest.jpg
-            latest_path = os.path.join(settings.MEDIA_ROOT, "uploads", "latest.jpg")
-            os.makedirs(os.path.dirname(latest_path), exist_ok=True)
-            with open(latest_path, "wb") as f:
-                f.write(image_bytes)
-
-        return JsonResponse({"status": "ok"})
-
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
 
 
 @require_POST
@@ -338,52 +296,6 @@ def delete_face_image(request):
         except FileNotFoundError:
             pass
     return JsonResponse({"status": "ok"})
-
-def fetch_and_analyze_suspect():
-    from .models import Profile
-
-    if not is_locked():
-        return  # Do nothing if not locked
-
-    try:
-        response = requests.get(f"{ESP32_CAM_IP}/capture", timeout=5)
-        if response.status_code != 200:
-            return
-
-        image_bytes = response.content
-        img = Image.open(io.BytesIO(image_bytes))
-        img_np = np.array(img)
-        face_locations = face_recognition.face_locations(img_np)
-
-        if face_locations:
-            user = User.objects.first()  # Default user
-            profile = user.profile
-            owner_path = profile.owner_image.path
-
-            # Save temporary test image
-            test_path = os.path.join(settings.MEDIA_ROOT, "temp_test.jpg")
-            with open(test_path, "wb") as f:
-                f.write(image_bytes)
-
-            result = recognize_faces_util(owner_path, test_path)[0]
-
-            # Save permanent
-            filename = f"{uuid.uuid4().hex}.jpg"
-            filepath = os.path.join(settings.MEDIA_ROOT, "faces", filename)
-            with open(filepath, "wb") as f:
-                f.write(image_bytes)
-            with open(filepath + ".txt", "w") as f:
-                f.write(result)
-
-            os.remove(test_path)
-        else:
-            latest_path = os.path.join(settings.MEDIA_ROOT, "uploads", "latest.jpg")
-            os.makedirs(os.path.dirname(latest_path), exist_ok=True)
-            with open(latest_path, "wb") as f:
-                f.write(image_bytes)
-
-    except Exception as e:
-        print(f"[ERROR] fetch_and_analyze_suspect: {e}")
 
 
 @require_GET
