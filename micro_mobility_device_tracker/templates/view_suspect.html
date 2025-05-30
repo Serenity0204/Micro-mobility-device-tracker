@@ -37,16 +37,6 @@
 <h3>🔓 Monitoring Off</h3>
 {% endif %}
 
-<form method="POST" action="{% url 'toggle_lock' %}">
-    {% csrf_token %}
-    <button type="submit">
-        {% if is_locked %}
-        🔓 Unlock (Stop Monitoring)
-        {% else %}
-        🔒 Lock (Start Monitoring)
-        {% endif %}
-    </button>
-</form>
 
 <h4>⚠️ Intrusion Captures (with Faces)</h4>
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">

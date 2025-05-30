@@ -17,6 +17,7 @@ urlpatterns = [
     path('esp32/', views.esp32_control_page, name='esp32_control'),
     path('esp32/high/', views.esp32_send_high, name='esp32_high'),
     path('esp32/low/', views.esp32_send_low, name='esp32_low'),
+    path('esp32/gps-location/', views.esp32_gps_location, name="esp32_gps_location"),
     # ESP32 CAM
     path("owner-unlock/", views.owner_unlock_view, name="owner_unlock"),
     path("capture-snapshot/", views.capture_snapshot, name="capture_snapshot"),

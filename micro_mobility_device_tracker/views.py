@@ -59,6 +59,8 @@ def recognize_faces_util(owner_path, test_path):
     return ["✅ Match (Same person)" if match else "❌ No match (Different person)"]
 
 
+def esp32_gps_location(request):
+    return render(request, "home.html")
 
 def esp32_control_page(request):
     return render(request, 'control.html')
@@ -78,8 +80,6 @@ def esp32_send_low(request):
         return HttpResponse(f"Error sending LOW: {e}")
 
 
-
-@require_POST
 @login_required
 def toggle_lock(request):
     set_lock_state(not is_locked())

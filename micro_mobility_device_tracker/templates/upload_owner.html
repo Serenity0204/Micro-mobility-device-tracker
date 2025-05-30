@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-  <h2>Upload Your Face Image</h2>
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-group">
-      {% if profile.owner_image %}
-        <img src="{{ profile.owner_image.url }}" alt="Your face" width="200" class="mb-3"><br>
-      {% endif %}
-      <input type="file" name="owner_image" class="form-control-file" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-  </form>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card p-5 shadow-lg" style="max-width: 500px; width: 100%;">
+    <h2 class="text-center mb-4">Upload Your Face Image</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group text-center">
+        {% if profile.owner_image %}
+        <img src="{{ profile.owner_image.url }}" alt="Your face" class="img-thumbnail mb-3"
+          style="max-width: 100%; height: auto;">
+        {% endif %}
+        <div class="d-flex justify-content-center mb-3">
+          <input type="file" name="owner_image" class="form-control" style="max-width: 300px;" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block w-100">Upload</button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}
