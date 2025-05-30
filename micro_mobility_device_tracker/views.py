@@ -55,7 +55,7 @@ def recognize_faces_util(owner_path, test_path):
     if not test_encodings:
         return ["❗ No face found in uploaded image."]
 
-    match = face_recognition.compare_faces([owner_encodings[0]], test_encodings[0])[0]
+    match = face_recognition.compare_faces([owner_encodings[0]], test_encodings[0], tolerance=0.4)[0]
     return ["✅ Match (Same person)" if match else "❌ No match (Different person)"]
 
 
