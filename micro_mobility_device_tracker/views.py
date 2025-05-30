@@ -182,13 +182,15 @@ def update_suspect_snapshot(request):
             result = recognize_faces_util(owner_path, temp_path)[0]
 
             # Save into faces/
-            filename = f"{uuid.uuid4().hex}.jpg"
-            face_path = os.path.join(settings.MEDIA_ROOT, "faces", filename)
-            os.makedirs(os.path.dirname(face_path), exist_ok=True)
-            with open(face_path, "wb") as f:
-                f.write(image_bytes)
-            with open(face_path + ".txt", "w") as f:
-                f.write(result)
+            if "✅" not in result:  # Only save if it's NOT the owner
+                filename = f"{uuid.uuid4().hex}.jpg"
+                face_path = os.path.join(settings.MEDIA_ROOT, "faces", filename)
+                os.makedirs(os.path.dirname(face_path), exist_ok=True)
+                with open(face_path, "wb") as f:
+                    f.write(image_bytes)
+                with open(face_path + ".txt", "w") as f:
+                    f.write(result)
+
 
             os.remove(temp_path)
 
