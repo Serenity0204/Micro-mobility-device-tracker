@@ -27,7 +27,7 @@ from django.views.decorators.http import require_GET
 
 
 
-ESP32_IP = "http://172.20.10.10"
+ESP32_IP = "http://172.20.10.11/"
 ESP32_CAM_IP = "http://172.20.10.8"
 
 LOCK_FILE = os.path.join(settings.BASE_DIR, "lock_state.txt")
@@ -59,31 +59,38 @@ def recognize_faces_util(owner_path, test_path):
     return ["✅ Match (Same person)" if match else "❌ No match (Different person)"]
 
 
-def esp32_gps_location(request):
-    return render(request, "home.html")
+def set_esp32_unlock_mode():
+    return requests.get(f"{ESP32_IP}/unlock-mode", timeout=5)
 
-def esp32_control_page(request):
-    return render(request, 'control.html')
-
-def esp32_send_high(request):
-    try:
-        requests.get(f"{ESP32_IP}/high", timeout=3)
-        return redirect('esp32_control')
-    except requests.exceptions.RequestException as e:
-        return HttpResponse(f"Error sending HIGH: {e}")
-
-def esp32_send_low(request):
-    try:
-        requests.get(f"{ESP32_IP}/low", timeout=3)
-        return redirect('esp32_control')
-    except requests.exceptions.RequestException as e:
-        return HttpResponse(f"Error sending LOW: {e}")
+def set_esp32_lock_mode():
+    return requests.get(f"{ESP32_IP}/lock-mode", timeout=5)
 
 
 @login_required
-def toggle_lock(request):
-    set_lock_state(not is_locked())
-    return redirect("view_suspect")
+def esp32_toggle_lock(request):
+    try:
+        currently_locked = is_locked()
+
+        if currently_locked:
+            response = set_esp32_unlock_mode()
+        else:
+            response = set_esp32_lock_mode()
+
+        if response.status_code == 200:
+            set_lock_state(not currently_locked)
+            return redirect("view_suspect")
+        return HttpResponse(f"ESP32 returned error: {response.text}", status=500)
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"Failed to contact ESP32: {e}", status=500)
+
+
+
+@login_required
+def esp32_gps_location(request):
+    return render(request, "home.html")
+
+
+
 
 @login_required
 def owner_unlock_view(request):
