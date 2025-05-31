@@ -177,3 +177,5 @@ cython_debug/
 .vscode/
 .vs.DS_Store
 .DS_Store
+
+lock_state.txt
