@@ -1,13 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.files.storage import default_storage
-from .models import Profile
 from django.db import IntegrityError
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -20,17 +17,17 @@ import numpy as np
 import face_recognition
 import io
 import uuid
-import logging
-from django.contrib.auth import get_user_model
-from django.utils import timezone
 from django.views.decorators.http import require_GET
-
+import json
 
 
 ESP32_IP = "http://172.20.10.11/"
 ESP32_CAM_IP = "http://172.20.10.8"
 
 LOCK_FILE = os.path.join(settings.BASE_DIR, "lock_state.txt")
+
+latest_coords = {"lat": None, "lon": None}
+
 
 def is_locked():
     return os.path.exists(LOCK_FILE)
@@ -85,10 +82,23 @@ def esp32_toggle_lock(request):
 
 
 
-@login_required
-def esp32_gps_location(request):
-    return render(request, "home.html")
+@csrf_exempt
+def esp32_send_gps_location(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        latest_coords["lat"] = data.get("latitude")
+        latest_coords["lon"] = data.get("longitude")
+        return JsonResponse({"status": "received"})
+    return JsonResponse({"error": "POST only"}, status=400)
 
+
+@login_required
+def get_latest_gps_location(request):
+    return JsonResponse(latest_coords)
+
+@login_required
+def view_gps_location(request):
+    return render(request, "gps_location.html", latest_coords)
 
 
 

@@ -18,10 +18,13 @@ urlpatterns = [
 
     # ESP32
     path("esp32/toggle-lock/", views.esp32_toggle_lock, name="esp32_toggle_lock"),
-    path('esp32/gps-location/', views.esp32_gps_location, name="esp32_gps_location"),
+    path('esp32/send-gps-location/', views.esp32_send_gps_location, name="esp32_send_gps_location"),
     # ESP32 CAM
     path("owner-unlock/", views.owner_unlock_view, name="owner_unlock"),
     path("capture-snapshot/", views.capture_snapshot, name="capture_snapshot"),
     path("view-suspect/", views.view_suspect, name="view_suspect"),
     path("update-suspect/", views.update_suspect_snapshot, name="update_suspect"),    
+    # Location
+    path("view-gps-location/", views.view_gps_location, name="view_gps_location"),
+    path("get-latest-gps-location/", views.get_latest_gps_location, name="get_latest_gps_location"),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

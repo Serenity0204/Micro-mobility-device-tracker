@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .container {
+        background-color: white;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        max-width: 800px;
+        width: 95%;
+        margin: 40px auto;
+        padding: 24px;
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        color: #111827;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 40px;
+    }
+
+    #map {
+        height: 500px;
+        width: 100%;
+        border-radius: 8px;
+    }
+
+    .leaflet-control-attribution {
+        display: none !important;
+    }
+</style>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<div class="container">
+    <h1>📍 Current GPS Location</h1>
+    <div id="map"></div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    let map, marker;
+
+    async function fetchLocation() {
+        const response = await fetch('/get-latest-gps-location/');
+        const data = await response.json();
+        const lat = parseFloat(data.lat);
+        const lon = parseFloat(data.lon);
+
+        if (!map) {
+            map = L.map('map').setView([lat, lon], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            marker = L.marker([lat, lon]).addTo(map).bindPopup("📍 Device Location").openPopup();
+        } else {
+            marker.setLatLng([lat, lon]);
+            map.setView([lat, lon]);
+        }
+    }
+
+    fetchLocation();
+    setInterval(fetchLocation, 5000);
+</script>
+{% endblock %}
