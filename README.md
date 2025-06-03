@@ -5,15 +5,13 @@
 Micro-mobility device theft is a prevalent issue on the UC San Diego campus, where limited tracking and monitoring make it challenging to prevent or resolve stolen e-scooters and bikes. Our project aims to develop an intelligent anti-theft system that integrates motion detection, GPS tracking, facial recognition, and real-time alerts to enhance the security of personal transportation devices.
 
 ## Demo
-* Demo 1
-* Demo 2
-
+[Demo Video](https://youtu.be/tMmxK_fiTrU?si=Ada6vppus1BcTzrK)
 
 ## Firmware
 The firmware of our device is in this repository
 [Firmware Repository](https://github.com/Serenity0204/Anti-Theft-Device-Firmware)
 
-## Detail Project Proposed Solution
+## Project Detail
 For more detailed information, please visit our [Proposed Solution Page](https://serenity0204.github.io/ece196-problem-page-website/proposed-solution.html).
 
 ## Enclosure
