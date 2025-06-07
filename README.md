@@ -1,4 +1,4 @@
-# Smart Anti-Theft System for Micro-Mobility Devices
+# Micro-Mobility Device Tracker
 
 ## Project Introduction
 
