@@ -12,7 +12,7 @@ The firmware of our device is in this repository
 [Firmware Repository](https://github.com/Serenity0204/Anti-Theft-Device-Firmware)
 
 ## Project Detail
-For more detailed information, please visit our [Proposed Solution Page](https://serenity0204.github.io/ece196-problem-page-website/proposed-solution.html).
+For more detailed information, please visit our [Proposed Solution Page](https://serenity0204.github.io/ece196-problem-page-website/).
 
 ## Enclosure
 Access the 3D model of our device enclosure here:
